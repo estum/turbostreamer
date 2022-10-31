@@ -9,7 +9,7 @@ class TurboStreamer
   class Railtie < ::Rails::Railtie
     initializer :turbostreamer do
       ActiveSupport.on_load :action_view do
-        ActionView::Template.register_template_handler :streamer, TurboStreamer::Handler
+        ActionView::Template.register_template_handler TurboStreamer.extension, TurboStreamer::Handler
         require 'turbostreamer/dependency_tracker'
       end
     end

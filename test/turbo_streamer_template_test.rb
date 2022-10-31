@@ -51,7 +51,7 @@ class TurboStreamerTemplateTest < ActionView::TestCase
       '_collection.json.streamer' => COLLECTION_TEMPLATE
     }
   end
-  
+
   def render_streamer(source)
     @rendered = []
     resolver = ActionView::FixtureResolver.new(partials.merge('test.json.streamer' => source))
@@ -323,7 +323,7 @@ class TurboStreamerTemplateTest < ActionView::TestCase
                 json.cache!("char_" + char) do
                   json.set!(:char, char)
                 end
-              end 
+              end
             end
           end
         end
@@ -352,7 +352,7 @@ class TurboStreamerTemplateTest < ActionView::TestCase
                 json.cache!("char_" + char) do
                   json.set!(:char, char)
                 end
-              end 
+              end
             end
           end
         end
@@ -385,7 +385,7 @@ class TurboStreamerTemplateTest < ActionView::TestCase
                 json.cache!("char_" + char) do
                   json.value!(char)
                 end
-              end 
+              end
             end
           end
         end
@@ -414,7 +414,7 @@ class TurboStreamerTemplateTest < ActionView::TestCase
                 json.cache!("char_" + char) do
                   json.value!(char)
                 end
-              end 
+              end
             end
           end
         end

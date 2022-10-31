@@ -11,6 +11,7 @@ class TurboStreamer
     msgpack: {msgpack: 'MessagePack'}
   }
 
+  @@extension = :stream
   @@default_encoders = {}
   @@encoder_options = Hash.new { |h, k| h[k] = {} }
   @@key_formatter = nil
@@ -228,6 +229,14 @@ class TurboStreamer
     @@key_formatter = formatter
   end
 
+  def self.extension
+    @@extension
+  end
+
+  def self.extension=(extension)
+    @@extension = extension
+  end
+
   def self.set_default_encoder(mime, encoder, default_options={})
     if encoder.is_a?(Symbol)
       @@default_encoders[mime] = get_encoder(mime, encoder)
@@ -236,7 +245,7 @@ class TurboStreamer
     end
     @@encoder_options[encoder] = default_options
   end
-  
+
   def self.set_default_encoder_options(encoder, options)
     @@encoder_options[encoder] = options
   end

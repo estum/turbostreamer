@@ -1,18 +1,24 @@
+# frozen_string_literal: true
+
 require 'turbostreamer'
+require 'concurrent/map'
 
 class TurboStreamer::Template < TurboStreamer
-  
   class << self
-    attr_accessor :template_lookup_options
-  end
+    @lookup_options_cache = Concurrent::Map.new
 
-  self.template_lookup_options = { handlers: [:streamer] }
+    def template_lookup_options
+      @lookup_options_cache.fetch_or_store(TurboStreamer.extension) do
+        { handlers: [TurboStreamer.extension].freeze }.freeze
+      end
+    end
+  end
 
   def initialize(context, *args, &block)
     @context = context
     super(*args, &block)
   end
-  
+
   def partial!(name_or_options, locals = {})
     if name_or_options.class.respond_to?(:model_name) && name_or_options.respond_to?(:to_partial_path)
       @context.render(name_or_options, json: self)
@@ -30,7 +36,7 @@ class TurboStreamer::Template < TurboStreamer
         options[:as] = as if as.present?
         options[:collection] = locals[:collection] if locals.key?(:collection)
       end
-      
+
       _render_partial_with_options options
     end
   end
@@ -65,7 +71,7 @@ class TurboStreamer::Template < TurboStreamer
       yield
     end
   end
-  
+
   # Caches a collection of objects using fetch_multi, if supported.
   # Requires a block for each item in the array. Accepts optional 'key' attribute
   # in options (e.g. key: 'v1').
@@ -79,7 +85,7 @@ class TurboStreamer::Template < TurboStreamer
     if @context.controller.perform_caching
       keys_to_collection_map = _keys_to_collection_map(collection, options)
       results = _read_multi_fragment_cache(keys_to_collection_map.keys, options)
-      
+
       array! do
         keys_to_collection_map.each_key do |key|
           if results[key]
@@ -158,10 +164,10 @@ class TurboStreamer::Template < TurboStreamer
       @context.render(options)
     end
   end
-  
+
   def _keys_to_collection_map(collection, options)
     key = options.delete(:key)
-    
+
     collection.inject({}) do |result, item|
       key = key.respond_to?(:call) ? key.call(item) : key
       cache_key = key ? [key, item] : item
@@ -208,7 +214,7 @@ class TurboStreamer::Template < TurboStreamer
       key = url_for(key).split('://', 2).last
     end
 
-    ::ActiveSupport::Cache.expand_cache_key(key, :streamer)
+    ::ActiveSupport::Cache.expand_cache_key(key, TurboStreamer.extension)
   end
 
   def _fragment_name_with_digest(key, options)
