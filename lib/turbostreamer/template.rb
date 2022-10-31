@@ -5,12 +5,14 @@ require 'concurrent/map'
 
 class TurboStreamer::Template < TurboStreamer
   class << self
-    @lookup_options_cache = Concurrent::Map.new
-
     def template_lookup_options
-      @lookup_options_cache.fetch_or_store(TurboStreamer.extension) do
+      cache.fetch_or_store(TurboStreamer.extension) do
         { handlers: [TurboStreamer.extension].freeze }.freeze
       end
+    end
+
+    private def cache
+      @cache ||= Concurrent::Map.new
     end
   end
 
