@@ -129,7 +129,7 @@ class TurboStreamer::Template < TurboStreamer
 
     if as && options.key?(:collection)
       # Option 1, nice simple, fast, calls find_template once
-      # array! { @context.render(options) }
+      array! { @context.render(options) }
 
       # Option 2, the jBuilder way, slow because find_template for every item
       # in the collection (a method which is known as one of the heaviest parts
@@ -146,22 +146,22 @@ class TurboStreamer::Template < TurboStreamer
 
       # Option 3, the fastest, haven't looked into precisely why, but would need
       # to customeize to the rails version
-      lookup_context = @context.view_renderer.lookup_context
-      options[:locals][:json] = self
-      options[:locals][:collection] = options[:collection]
-
-      pr = ActionView::PartialRenderer.new(lookup_context)
-      pr.send(:setup, @context, options, as, nil)
-      path = pr.instance_variable_get(:@path)
-      a, b, c = pr.send(:retrieve_variable, path, as)
-      template_keys = pr.send(:retrieve_template_keys, a).compact
-      # + [:"#{a}__counter", :"#{a}_iteration"]
-      template = pr.send(:find_partial, path, template_keys)
-      locals = options[:locals]
-      array! options[:collection] do |member|
-        locals[as] = member
-        template.render(@context, locals)
-      end
+      # lookup_context = @context.view_renderer.lookup_context
+      # options[:locals][:json] = self
+      # options[:locals][:collection] = options[:collection]
+      #
+      # pr = ActionView::PartialRenderer.new(lookup_context)
+      # pr.send(:setup, @context, options, as, nil)
+      # path = pr.instance_variable_get(:@path)
+      # a, b, c = pr.send(:retrieve_variable, path, as)
+      # template_keys = pr.send(:retrieve_template_keys, a).compact
+      # # + [:"#{a}__counter", :"#{a}_iteration"]
+      # template = pr.send(:find_partial, path, template_keys)
+      # locals = options[:locals]
+      # array! options[:collection] do |member|
+      #   locals[as] = member
+      #   template.render(@context, locals)
+      # end
     else
       @context.render(options)
     end
